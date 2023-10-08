@@ -1,0 +1,33 @@
+[
+  {
+    "user_id": "",
+    "docter_id": "",
+    "dignosis": [
+      {
+        "Disease": "",
+        "medicines": [{ "name": "", "status": false }]
+      }
+    ]
+  },
+  {
+    "user_id": null,
+    "docter_id": "",
+    "dignosis": [
+      {
+        "Disease": "",
+        "medicines": [{ "name": " ", "status": false }]
+      }
+    ],
+    "timestamp": ""
+  },
+  {
+    "user_id": null,
+    "docter_id": "",
+    "dignosis": [
+      {
+        "Disease": "",
+        "medicines": [{ "name": " ", "status": false }]
+      }
+    ]
+  }
+]
