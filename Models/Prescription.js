@@ -30,5 +30,4 @@ const PresSchema = new Schema(
 
 //** Create a User model using the User schema
 const PresModel = mongoose.model("PresModel", PresSchema);
-
 module.exports = PresModel;
