@@ -22,6 +22,7 @@ const medicalSchema = new Schema({
 const userSchema = new Schema({
   name: String,
   id_card: String,
+  password: String,
   medical: medicalSchema, // Embed the Medical schema
 });
 
