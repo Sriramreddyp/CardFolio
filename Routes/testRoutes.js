@@ -25,7 +25,6 @@ TestRouter.post(
     //? Validation Parameters
     body("id_card", "Please enter the Id in required format")
       .exists()
-      .isNumeric()
       .isLength({ min: 12 }),
     body("password", "Please Enter the Password in required Format")
       .exists()

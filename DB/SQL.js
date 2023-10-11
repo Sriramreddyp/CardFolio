@@ -4,7 +4,7 @@ const con = SQL.createConnection({
   host: "localhost",
   user: "root",
   password: "root",
-  database: "creditsys",
+  database: "estonian_card",
 });
 
 con.connect((err) => {
