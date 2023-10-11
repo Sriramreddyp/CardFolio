@@ -5,7 +5,7 @@ const DocRouter = require("./Routes/doctor.js");
 const test = require("./Routes/testRoutes.js");
 const app = express();
 require("./DB/Server.js");
-
+require("./DB/SQL.js");
 app.use(express.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 dotenv.config();
