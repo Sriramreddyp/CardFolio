@@ -13,7 +13,7 @@ TestRouter.post(
   "/addUser",
   [
     //? Validation Parameters
-    body("id_card", "Please enter the number in required format")
+    body("id_card", "Please enter the Id in required format")
       .exists()
       .isNumeric()
       .isLength({ min: 12 }),
@@ -45,16 +45,38 @@ TestRouter.post(
 );
 
 //**Doc addition route to the prescription Schema */
-TestRouter.post("/presAdd", async (req, res) => {
-  const pres = new PresModel(req.body);
-  try {
-    await pres.save();
-    console.log(pres);
-    res.json({ status: "Sucessfull!!" });
-  } catch (error) {
-    console.log(error);
-    res.json({ status: "Not Inserted" });
+TestRouter.post(
+  "/presAdd",
+  [
+    //? Validation Parameters
+    body("doctor_id", "Please enter the Id in required format")
+      .exists()
+      .isNumeric()
+      .isLength({ min: 12 }),
+    body("user_id", "Please enter the ID in required format")
+      .exists()
+      .isNumeric()
+      .isLength({ min: 0, max: 12 }),
+  ],
+  async (req, res) => {
+    try {
+      //? Input Validation For id_card and password.
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        throw errors;
+      }
+      //? Creation of schema object
+      const pres = new PresModel(req.body);
+
+      //? Query Execution Handling
+      await pres.save();
+      console.log(pres);
+      res.json({ status: "Sucessfull!!" });
+    } catch (error) {
+      console.log(error);
+      res.json({ status: "Not Inserted" });
+    }
   }
-});
+);
 
 module.exports = TestRouter;
