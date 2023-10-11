@@ -3,6 +3,16 @@ const PresModel = require("../Models/Prescription");
 const UserModel = require("../Models/User");
 const TestRouter = express.Router();
 const { body, validationResult } = require("express-validator");
+const validatePrescription = require("../Operations/operations.js");
+
+//* Consolidated prescription object - For Test purpose will be removed later
+let prescription = {
+  user_id: "20BCN7002",
+  doctor_id: "rydh374hd",
+  diagnosis: [
+    { Disease: "Diarrea", medicines: [{ name: "enyon", status: true }] },
+  ],
+};
 
 TestRouter.get("/", (req, res) => {
   res.json("Connection Successfull");
@@ -45,38 +55,25 @@ TestRouter.post(
 );
 
 //**Doc addition route to the prescription Schema */
-TestRouter.post(
-  "/presAdd",
-  [
-    //? Validation Parameters
-    body("doctor_id", "Please enter the Id in required format")
-      .exists()
-      .isNumeric()
-      .isLength({ min: 12 }),
-    body("user_id", "Please enter the ID in required format")
-      .exists()
-      .isNumeric()
-      .isLength({ min: 0, max: 12 }),
-  ],
-  async (req, res) => {
-    try {
-      //? Input Validation For id_card and password.
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        throw errors;
-      }
+TestRouter.post("/presAdd", async (req, res) => {
+  try {
+    //? Validation for consolidated Prescription object
+    if (!validatePrescription(prescription)) {
+      console.log("Validation Fault!!");
+      res.json({ status: "Not Inserted" });
+    } else {
       //? Creation of schema object
-      const pres = new PresModel(req.body);
+      const pres = new PresModel(prescription);
 
       //? Query Execution Handling
       await pres.save();
       console.log(pres);
       res.json({ status: "Sucessfull!!" });
-    } catch (error) {
-      console.log(error);
-      res.json({ status: "Not Inserted" });
     }
+  } catch (error) {
+    console.log(error);
+    res.json({ status: "Not Inserted" });
   }
-);
+});
 
 module.exports = TestRouter;
