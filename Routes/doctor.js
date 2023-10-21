@@ -4,6 +4,9 @@ const DocRouter = express.Router();
 const dboperations = require("../Operations/DataBaseOperations.js");
 const jwt = require("jsonwebtoken");
 
+//** Global variables */
+let prescription;
+
 //* Base Route
 DocRouter.get("/", (req, res) => {
   res.send("Doctor Route is Working Fine!!");

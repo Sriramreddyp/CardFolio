@@ -1,4 +1,5 @@
 const con = require("../DB/SQL.js");
+const unid = require("generate-unique-id");
 
 //** SQL DB operation to grap password login operation */
 async function loginDoctor(docter_id) {
@@ -21,4 +22,24 @@ async function loginDoctor(docter_id) {
   return await dbOper;
 }
 
-module.exports = { loginDoctor };
+//** SQL DB Operation for Docter Addition */
+async function createDocter(service_id, name, pin) {
+  //? Server Generated Auth_ID
+  let auth_id = unid({ length: 15, useLetters: true, useNumbers: true });
+
+  //? Promise created to resolve the whether inserted or not
+  dbOper = new Promise((resolve, _reject) => {
+    //? Query
+    let sql = "INSERT INTO service_provider VALUES(?,?,?,?,?)";
+    //? Values
+    let values = [service_id, name, "docter", pin, auth_id];
+    //? Execution
+    con.query(sql, values, (result) => {
+      if (result != null) resolve(result.code);
+      else resolve(true);
+    });
+  });
+  return await dbOper;
+}
+
+module.exports = { loginDoctor, createDocter };
