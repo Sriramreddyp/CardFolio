@@ -8,7 +8,7 @@ const dboperations = require("../Operations/DataBaseOperations.js");
 
 //* Consolidated prescription object - For Test purpose will be removed later
 let prescription = {
-  user_id: "20BCN7002",
+  user_id: "20BCN7006",
   doctor_id: "rydh374hddadasd",
   diagnosis: [
     { Disease: "Diarrea", medicines: [{ name: "enyon", status: true }] },
@@ -17,16 +17,16 @@ let prescription = {
 
 //* Consolidated user object - For Test purpose will be removed later
 let User = {
-  name: "Atreus",
-  id_card: "243456567876",
-  password: "Amman3213dadasdadsa",
+  name: "Miles",
+  id_card: "VenomSucks69",
+  password: "HaileySucks23",
   medical: {
     Body_weight: 150,
     Body_height: 200,
-    Blood_Group: "He is God!",
-    Diabetic_status: "He is God!",
-    "Colestrol level": "Just Like his enemies Blood",
-    prescription: [{ prescription_id: "2hd76fsjasd87" }],
+    Blood_Group: "A-",
+    Diabetic_status: "No",
+    "Colestrol level": "Node",
+    prescription: [{ prescription_id: "dsadh34h1kn2" }],
     status: "true",
   },
 };
@@ -55,6 +55,37 @@ TestRouter.post("/addUser", async (req, res) => {
     res.json({ status: "Not Inserted" });
   }
 });
+
+//** Doc Retreival Route for retreiving User's info by id  */
+TestRouter.post(
+  "/getUser",
+  [
+    body("id", "Enter the user_id in required format.")
+      .exists()
+      .isLength({ min: 12, max: 12 }),
+  ],
+  async (req, res) => {
+    try {
+      //? Input Validation
+      let errors = validationResult(req);
+      if (!errors.isEmpty()) throw errors;
+
+      //? Retrieve Details
+      const userInfo = await UserModel.find({ id_card: req.body.id });
+
+      // //? Handling User Exception of document not found
+      if (userInfo.length == 0) res.json({ status: "Document Not Found!!" });
+
+      //?Consolidating information
+      const medicalInfo = userInfo[0].medical;
+      const prescriptionInfo = medicalInfo.prescription;
+
+      res.json({ medical: medicalInfo, prescription_Info: prescriptionInfo });
+    } catch (errors) {
+      res.json({ status: errors });
+    }
+  }
+);
 
 //**Doc addition route to the prescription Schema */
 TestRouter.post("/presAdd", async (req, res) => {
