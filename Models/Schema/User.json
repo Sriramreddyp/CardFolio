@@ -1,0 +1,16 @@
+[
+  {
+    "name": "",
+    "id_card": "",
+    "password": "",
+    "medical": {
+      "Body_weight": 0,
+      "Body_height": 0,
+      "Blood_Group": 0,
+      "Diabetic_Status": 0,
+      "Colestrol_level": 0,
+      "prescription": [{ "prescription_id": "" }]
+    },
+    "status": true
+  }
+]
