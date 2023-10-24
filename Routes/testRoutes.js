@@ -87,7 +87,7 @@ TestRouter.post(
   }
 );
 
-//**Doc addition route to the prescription Schema */
+//**Doc addition route to the prescription Schema - utility*/
 TestRouter.post("/presAdd", async (req, res) => {
   try {
     //? Validation for consolidated Prescription object
