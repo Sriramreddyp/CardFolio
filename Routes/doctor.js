@@ -83,7 +83,7 @@ DocRouter.post(
       // //?Cookies Generation and parsing
       jwt.sign(
         { user: req.body.id },
-        process.env.REFRESH_TOKEN_USER2,
+        process.env.REFRESH_TOKEN_USER,
         { expiresIn: "10m" },
         (err, token) => {
           if (err) {
@@ -103,9 +103,8 @@ DocRouter.post(
       const userInfo = await UserModel.find({ id_card: req.body.id });
 
       // //? Handling User Exception of document not found
-      if (userInfo.length == 0) {
+      if (userInfo.length == 0)
         throw "unable to find the user with given user_id";
-      }
 
       //?Consolidating information
       //! PROBLEM WITH PRESCRIPTION CONSOLIDATION
@@ -124,9 +123,12 @@ DocRouter.post(
         prescriptions: prescriptions,
       });
     } catch (msg) {
+      res.clearcookie("access_token_user");
       res.status(500).json({ status: msg });
     }
   }
 );
+
+//* Doc prescription addition route with user updation
 
 module.exports = DocRouter;

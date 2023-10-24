@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+//* For authorizing docter cookie
 const authorizationDoctor = (req, res, next) => {
   const token = req.cookies.access_token_doctor;
   if (!token) {
@@ -14,6 +15,7 @@ const authorizationDoctor = (req, res, next) => {
   }
 };
 
+//* For authorizing user cookie
 const authorizationUser = (req, res, next) => {
   const token = req.cookies.access_token_user;
   if (!token) {

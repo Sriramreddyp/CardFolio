@@ -149,7 +149,7 @@ TestRouter.post(
     try {
       //? Input Validation
       let errors = validationResult(req);
-      console.log(errors);
+
       if (!errors.isEmpty()) throw errors;
 
       //? Retrieving Values
@@ -166,9 +166,9 @@ TestRouter.post(
 
       //? Acknoledgment
       if (checkInserted == true) res.json({ status: "Values Inserted" });
-      else res.json({ status: checkInserted });
+      else res.json({ status: "Values Not Inserted" });
     } catch (errors) {
-      res.json({ status: "Wrong Input Format" });
+      res.status(500).json({ status: errors });
     }
   }
 );
