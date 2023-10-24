@@ -130,5 +130,66 @@ DocRouter.post(
 );
 
 //* Doc prescription addition route with user updation
+DocRouter.post(
+  "/presAdd",
+  [
+    body("docter_id", "Enter Docter_Id in correct format")
+      .exists()
+      .isLength({ min: 12, max: 12 }),
+    body("user_id", "Enter the user_id in the correct format")
+      .exists()
+      .isLength({ min: 12, max: 12 }),
 
+    body("medicines").exists(),
+    body("diseases").exists(),
+  ],
+  async (req, res) => {
+    try {
+      //?validation handling
+      let errors = validationResult(req);
+      if (!errors.isEmpty()) throw errors;
+
+      //? Retieving user details
+      let user = await UserModel.find({ id_card: req.body.user_id });
+      if (!user) throw "User Not Found";
+
+      //?Forming medicine object from comma seperated file and extracting disease
+      let medicines = validatingOperations.extractMedicines(req.body.medicines);
+      let Disease = req.body.diseases;
+
+      //? Forming prescription schema
+      const prescription = new PresModel({
+        user_id: req.body.user_id,
+        doctor_id: req.body.docter_id,
+        diagnosis: [{ Disease, medicines }],
+      });
+
+      //? Query Execution Handling
+      try {
+        const pres_id = await prescription.save();
+        const id = pres_id._id;
+
+        //?Updating the user with new prescription Id
+        user[0].medical.prescription.push({ id });
+
+        //? Updating the user with new prescription id's
+        let newUser = await UserModel.findOneAndUpdate(
+          { id_card: req.body.user_id },
+          { $set: user[0] },
+          { new: true }
+        );
+
+        res.status(200).json({ newUser });
+      } catch (err) {
+        res
+          .status(400)
+          .json({ status: "unable to store prescription", error: err });
+      }
+    } catch (err) {
+      res
+        .status(400)
+        .json({ status: "unable to store prescription", error: err });
+    }
+  }
+);
 module.exports = DocRouter;

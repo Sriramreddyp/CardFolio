@@ -37,4 +37,13 @@ function validateUser(User) {
   else return false;
 }
 
-module.exports = { validatePrescription, validateUser };
+//* Function to seggragate medicine
+function extractMedicines(medicines) {
+  let medicinalArray = medicines.split(",");
+  let finalArray = [];
+  for (let i = 0; i < medicinalArray.length; i++) {
+    finalArray.push({ name: medicinalArray[i], status: false });
+  }
+  return finalArray;
+}
+module.exports = { validatePrescription, validateUser, extractMedicines };
