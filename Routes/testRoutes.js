@@ -5,7 +5,6 @@ const TestRouter = express.Router();
 const { body, validationResult } = require("express-validator");
 const validatingOperations = require("../Operations/operations.js");
 const dboperations = require("../Operations/DataBaseOperations.js");
-const { response } = require("express");
 
 //* Consolidated prescription object - For Test purpose will be removed later
 let prescription = {
@@ -80,10 +79,18 @@ TestRouter.post(
       if (userInfo.length == 0) res.json({ status: "Document Not Found!!" });
 
       //?Consolidating information
+      //! PROBLEM WITH PRESCRIPTION CONSOLIDATION
       const medicalInfo = userInfo[0].medical;
       const prescriptionInfo = medicalInfo.prescription;
-
-      res.json({ medical: medicalInfo, prescription_Info: prescriptionInfo });
+      const prescriptions = [];
+      for (let i = 0; i < prescriptionInfo.length; i++) {
+        prescriptions.push(await UserModel.findById(prescriptionInfo[i].id));
+      }
+      res.json({
+        medical: medicalInfo,
+        prescription_Info: prescriptionInfo,
+        prescriptions: prescriptions,
+      });
     } catch (errors) {
       res.json({ status: errors });
     }
