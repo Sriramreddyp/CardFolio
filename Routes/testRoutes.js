@@ -5,13 +5,14 @@ const TestRouter = express.Router();
 const { body, validationResult } = require("express-validator");
 const validatingOperations = require("../Operations/operations.js");
 const dboperations = require("../Operations/DataBaseOperations.js");
+const { response } = require("express");
 
 //* Consolidated prescription object - For Test purpose will be removed later
 let prescription = {
-  user_id: "20BCN7002",
-  doctor_id: "rydh374hddadasd",
+  user_id: "243456567876",
+  doctor_id: "123456781234",
   diagnosis: [
-    { Disease: "Diarrea", medicines: [{ name: "enyon", status: true }] },
+    { Disease: "Diarrea", medicines: [{ name: "eldopher", status: true }] },
   ],
 };
 
@@ -23,10 +24,10 @@ let User = {
   medical: {
     Body_weight: 150,
     Body_height: 200,
-    Blood_Group: "He is God!",
-    Diabetic_status: "He is God!",
-    "Colestrol level": "Just Like his enemies Blood",
-    prescription: [{ prescription_id: "2hd76fsjasd87" }],
+    Blood_Group: "A-",
+    Diabetic_status: false,
+    "Colestrol level": 77,
+    prescription: [],
     status: "true",
   },
 };
@@ -46,12 +47,14 @@ TestRouter.post("/addUser", async (req, res) => {
       //? Creation of schema object
       const user = new UserModel(User);
       //? Query Execution and Handling
-      await user.save();
-      console.log(user);
-      res.json({ status: "Sucessfull!!" });
+      try {
+        await user.save();
+        res.json({ status: "Sucessfull!!" });
+      } catch (err) {
+        res.json({ status: "UnSucessfull - User Exists" });
+      }
     }
   } catch (error) {
-    console.log(error);
     res.json({ status: "Not Inserted" });
   }
 });
@@ -64,16 +67,31 @@ TestRouter.post("/presAdd", async (req, res) => {
       console.log("Validation Fault!!");
       res.json({ status: "Not Inserted" });
     } else {
+      //? Retreiving the user from user's schema
+      let user = await UserModel.find({ id_card: User.id_card });
       //? Creation of schema object
       const pres = new PresModel(prescription);
       //? Query Execution Handling
-      await pres.save();
-      console.log(pres);
-      res.json({ status: "Sucessfull!!" });
+      try {
+        const pres_id = await pres.save();
+        const id = pres_id._id;
+        // //?Updating the user with new prescription Id
+        user[0].medical.prescription.push({ id });
+        console.log(user);
+        let newUser = await UserModel.findOneAndUpdate(
+          { id_card: User.id_card },
+          { $set: user[0] },
+          { new: true }
+        );
+        res.status(200).json({ newUser });
+      } catch (err) {
+        console.log(err);
+        res.status(400).json({ error: "unable to store prescription" });
+      }
     }
   } catch (error) {
     console.log(error);
-    res.json({ status: "Not Inserted" });
+    res.status(500).json({ status: "Not Inserted" });
   }
 });
 
