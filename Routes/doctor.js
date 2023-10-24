@@ -6,9 +6,7 @@ const jwt = require("jsonwebtoken");
 const validatingOperations = require("../Operations/operations.js");
 const PresModel = require("../Models/Prescription");
 const UserModel = require("../Models/User");
-
-//** Global variables */
-let prescription;
+const middle = require("../Utils/middleware.js");
 
 //* Base Route
 DocRouter.get("/", (req, res) => {
@@ -132,17 +130,19 @@ DocRouter.post(
 //* Doc prescription addition route with user updation
 DocRouter.post(
   "/presAdd",
+
   [
-    body("docter_id", "Enter Docter_Id in correct format")
+    body("d_id", "Enter Docter_Id in correct format")
       .exists()
       .isLength({ min: 12, max: 12 }),
-    body("user_id", "Enter the user_id in the correct format")
+    body("u_id", "Enter the user_id in the correct format")
       .exists()
       .isLength({ min: 12, max: 12 }),
 
     body("medicines").exists(),
     body("diseases").exists(),
   ],
+
   async (req, res) => {
     try {
       //?validation handling
@@ -150,7 +150,7 @@ DocRouter.post(
       if (!errors.isEmpty()) throw errors;
 
       //? Retieving user details
-      let user = await UserModel.find({ id_card: req.body.user_id });
+      let user = await UserModel.find({ id_card: req.bpdy.u_id });
       if (!user) throw "User Not Found";
 
       //?Forming medicine object from comma seperated file and extracting disease
@@ -159,8 +159,8 @@ DocRouter.post(
 
       //? Forming prescription schema
       const prescription = new PresModel({
-        user_id: req.body.user_id,
-        doctor_id: req.body.docter_id,
+        user_id: req.body.u_id,
+        doctor_id: req.body.d_id,
         diagnosis: [{ Disease, medicines }],
       });
 
@@ -174,7 +174,7 @@ DocRouter.post(
 
         //? Updating the user with new prescription id's
         let newUser = await UserModel.findOneAndUpdate(
-          { id_card: req.body.user_id },
+          { id_card: req.user_id },
           { $set: user[0] },
           { new: true }
         );
