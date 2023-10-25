@@ -1,3 +1,5 @@
+const Prescription = require('../Models/Prescription');
+
 function validatePrescription(prescription) {
     const regex = /^\d+$/;
     let userCheck;
@@ -44,4 +46,19 @@ function extractMedicines(medicines){
     return finalArray;
 }
 
-module.exports = {validatePrescription, validateUser, extractMedicines};
+// async function fetchPrescriptions(presArray) {
+//     const prescriptionObjects = [];
+    
+//     for (const pres_id of presArray) {
+//         const prescription = await Prescription.findById(pres_id);
+//         console.log(prescription);
+//         prescriptionObjects.push(prescription);
+//     }
+//     return prescriptionObjects;
+// }
+
+async function fetchPrescriptions(pres_id){
+    return await Prescription.findById(pres_id);
+}
+
+module.exports = {validatePrescription, validateUser, extractMedicines, fetchPrescriptions};

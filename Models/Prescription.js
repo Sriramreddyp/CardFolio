@@ -17,6 +17,7 @@ const diagnosisSchema = new Schema({
 const PresSchema = new Schema({
     user_id: { type: mongoose.Types.ObjectId, required: true },
     doctor_id: { type: String, required: true },
+    timestamp: {type: String,required: true},
     diagnosis: [diagnosisSchema], // Embed the Diagnosis schema as an array
 });
 
