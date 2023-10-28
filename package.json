@@ -22,5 +22,8 @@
     "mongoose": "^7.6.0",
     "mysql2": "^3.6.1",
     "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "cookie-parser": "^1.4.6"
   }
 }

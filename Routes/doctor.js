@@ -131,41 +131,63 @@ DocRouter.post(
 DocRouter.post(
   "/presAdd",
 
-  [
-    body("d_id", "Enter Docter_Id in correct format")
-      .exists()
-      .isLength({ min: 12, max: 12 }),
-    body("u_id", "Enter the user_id in the correct format")
-      .exists()
-      .isLength({ min: 12, max: 12 }),
-
-    body("medicines").exists(),
-    body("diseases").exists(),
-  ],
+  [body("medicines").exists(), body("diseases").exists()],
 
   async (req, res) => {
+    //?Authentication for cookie
     try {
-      //?validation handling
-      let errors = validationResult(req);
-      if (!errors.isEmpty()) throw errors;
+      //? For Holding id's
+      let User_ID;
+      let Docter_ID;
 
-      //? Retieving user details
-      let user = await UserModel.find({ id_card: req.bpdy.u_id });
-      if (!user) throw "User Not Found";
+      //? Retriving cookies -- Error Case - if there are no cookies
+      const docterToken = req.cookies.access_token_doctor;
+      const userToken = req.cookies.access_token_user;
 
-      //?Forming medicine object from comma seperated file and extracting disease
-      let medicines = validatingOperations.extractMedicines(req.body.medicines);
-      let Disease = req.body.diseases;
+      if (!docterToken || !userToken)
+        throw "can't access without authentication";
 
-      //? Forming prescription schema
-      const prescription = new PresModel({
-        user_id: req.body.u_id,
-        doctor_id: req.body.d_id,
-        diagnosis: [{ Disease, medicines }],
-      });
-
-      //? Query Execution Handling
+      //?Block to catch verifying exceptions - error case jwt expire
       try {
+        const docterData = jwt.verify(
+          docterToken,
+          process.env.REFRESH_TOKEN_DOCTOR
+        );
+
+        const userData = jwt.verify(userToken, process.env.REFRESH_TOKEN_USER);
+
+        User_ID = userData.user;
+        Docter_ID = docterData.doc;
+      } catch (err) {
+        res.status(500).json({ status: "JWT Expired" });
+      }
+
+      try {
+        //?validation handling
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) throw errors;
+
+        //? Retieving user details -- error case - no retrival
+
+        let user = await UserModel.find({ id_card: User_ID });
+        if (!user) throw "User Not Found";
+
+        //?Forming medicine object from comma seperated file and extracting disease
+        let medicines = validatingOperations.extractMedicines(
+          req.body.medicines
+        );
+
+        let Disease = req.body.diseases;
+
+        //? Forming prescription schema
+        const prescription = new PresModel({
+          user_id: User_ID,
+          doctor_id: Docter_ID,
+          diagnosis: [{ Disease, medicines }],
+        });
+
+        //? Query Execution Handling
+
         const pres_id = await prescription.save();
         const id = pres_id._id;
 
@@ -174,7 +196,7 @@ DocRouter.post(
 
         //? Updating the user with new prescription id's
         let newUser = await UserModel.findOneAndUpdate(
-          { id_card: req.user_id },
+          { id_card: User_ID },
           { $set: user[0] },
           { new: true }
         );
@@ -182,14 +204,15 @@ DocRouter.post(
         res.status(200).json({ newUser });
       } catch (err) {
         res
-          .status(400)
+          .status(500)
           .json({ status: "unable to store prescription", error: err });
       }
     } catch (err) {
       res
-        .status(400)
-        .json({ status: "unable to store prescription", error: err });
+        .status(500)
+        .json({ msg: "Unable to store prescription", status: err });
     }
   }
 );
+
 module.exports = DocRouter;
