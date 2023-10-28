@@ -159,7 +159,17 @@ DocRouter.post(
         User_ID = userData.user;
         Docter_ID = docterData.doc;
       } catch (err) {
-        res.status(500).json({ status: "JWT Expired" });
+        return res.status(500).json({ status: "JWT Expired" });
+      }
+
+      //?Checking for permission in permission database
+      try {
+        let permissionCheck = await dboperations.checkPermission(Docter_ID);
+
+        if (permissionCheck != "edit")
+          throw "Doctor is not permitted to edit..";
+      } catch (err) {
+        return res.status(500).json({ status: err });
       }
 
       try {

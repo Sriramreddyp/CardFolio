@@ -173,4 +173,44 @@ TestRouter.post(
   }
 );
 
+//** Permission Addtion route to permissions table */
+TestRouter.post(
+  "/permissionAdd",
+  [
+    body("role_id", "Enter the service id in correct format")
+      .exists()
+      .isLength({ min: 12, max: 12 }),
+    body("role", "Role is mandatory").exists(),
+    body("access", "access should be either only-read or edit").equals(
+      "edit" || "only-read"
+    ),
+  ],
+  async (req, res) => {
+    try {
+      //? Input Validation
+      let errors = validationResult(req);
+
+      if (!errors.isEmpty()) throw errors;
+
+      //? Retrieving Values
+      let role_id = req.body.role_id;
+      let role = req.body.role;
+      let access = req.body.access;
+
+      //? Query Execution
+      let checkInserted = await dboperations.createPermission(
+        role_id,
+        role,
+        access
+      );
+
+      //? Acknoledgment
+      if (checkInserted == true) res.json({ status: "Values Inserted" });
+      else res.json({ status: "Values Not Inserted" });
+    } catch (errors) {
+      res.status(500).json({ status: errors });
+    }
+  }
+);
+
 module.exports = TestRouter;

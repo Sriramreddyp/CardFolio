@@ -42,4 +42,47 @@ async function createDocter(service_id, name, pin) {
   return await dbOper;
 }
 
-module.exports = { loginDoctor, createDocter };
+//** SQL DB Operation for Permission Addition */
+async function createPermission(role_id, role_name, access) {
+  //? Promise created to resolve the whether inserted or not
+  dbOper = new Promise((resolve, _reject) => {
+    //? Query
+    let sql = "INSERT INTO permissions VALUES(?,?,?)";
+    //? Values
+    let values = [role_id, role_name, access];
+    //? Execution
+    con.query(sql, values, (result) => {
+      if (result != null) resolve(result.code);
+      else resolve(true);
+    });
+  });
+  return await dbOper;
+}
+
+//** SQL DB Operation to retrive Docter's permission from permission table */
+async function checkPermission(role_id) {
+  var access;
+  //? Promise created to resolve the retreived value
+  dbOper = new Promise((resolve, _reject) => {
+    //? Query Execution
+    con.query(
+      `SELECT access FROM permissions WHERE role_id='${role_id}' `,
+      (err, result) => {
+        if (err) resolve(false);
+        else {
+          access = result[0].access;
+          console.log(access);
+          resolve(access);
+        }
+      }
+    );
+  });
+  return await dbOper;
+}
+
+module.exports = {
+  loginDoctor,
+  createDocter,
+  createPermission,
+  checkPermission,
+};
