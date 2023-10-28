@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const validatingOperations = require("../Operations/operations.js");
 const PresModel = require("../Models/Prescription");
 const UserModel = require("../Models/User");
-const middle = require("../Utils/middleware.js");
 
 //* Base Route
 DocRouter.get("/", (req, res) => {
@@ -33,7 +32,7 @@ DocRouter.post(
 
       //? Grabbing values from req and database
       let doc_id = req.body.service_id;
-      let pass = await dboperations.loginDoctor(doc_id);
+      let pass = await dboperations.loginServiceProvider(doc_id);
 
       //? CheckUp for authenticity
       if (pass == false || pass != req.body.pin) throw "Invalid credentials";

@@ -46,4 +46,40 @@ function extractMedicines(medicines) {
   }
   return finalArray;
 }
-module.exports = { validatePrescription, validateUser, extractMedicines };
+
+//* Function to seggregate docterID's
+function extractDocterIDs(user) {
+  let docterIds = [];
+  for (let i = 0; i < user.length; i++) {
+    docterIds.push(user[i].doctor_id);
+  }
+  return docterIds;
+}
+
+//* Function to consolidate information (User-side) for pharmacist
+function consolidationForPharmacist(
+  docterids,
+  docternames,
+  docterauthids,
+  diagnosis
+) {
+  let consolidatedInfo = [];
+  for (let i = 0; i < docterids.length; i++) {
+    let obj = {
+      auth_id: docterauthids[i],
+      service_id: docterids[i],
+      name: docternames[i],
+      diagnosis: diagnosis[i],
+    };
+    consolidatedInfo.push(obj);
+  }
+  return consolidatedInfo;
+}
+
+module.exports = {
+  validatePrescription,
+  validateUser,
+  extractMedicines,
+  extractDocterIDs,
+  consolidationForPharmacist,
+};

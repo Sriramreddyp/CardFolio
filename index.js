@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const BodyParser = require("body-parser");
 const DocRouter = require("./Routes/doctor.js");
 const test = require("./Routes/testRoutes.js");
+const pharmac = require("./Routes/pharmacist.js");
 const cookieParser = require("cookie-parser");
 const app = express();
 require("./DB/Server.js");
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 
 app.use("/doctor", DocRouter);
 app.use("/test", test);
+app.use("/phar", pharmac);
 
 app.listen(process.env.PORT, () => {
   console.log(`API Listening on Port : ${process.env.PORT}`);
