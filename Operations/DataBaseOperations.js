@@ -109,7 +109,7 @@ async function checkPermission(role_id) {
     con.query(
       `SELECT access FROM permissions WHERE role_id='${role_id}' `,
       (err, result) => {
-        if (err) resolve(false);
+        if (err || result.length == 0) resolve(false);
         else {
           access = result[0].access;
           console.log(access);

@@ -39,7 +39,7 @@ PharRouter.post(
 
       //?Cookie Generation
       jwt.sign(
-        { doc: doc_id },
+        { pharmacist: doc_id },
         process.env.REFRESH_TOKEN_PHARMACIST,
         { expiresIn: "10m" },
         (err, token) => {
@@ -80,14 +80,14 @@ PharRouter.post(
 
       // //?Cookies Generation and parsing
       jwt.sign(
-        { user: req.body.id },
-        process.env.REFRESH_TOKEN_USER,
+        { pharmacist: req.body.id },
+        process.env.REFRESH_TOKEN_PHARMACIST,
         { expiresIn: "10m" },
         (err, token) => {
           if (err) {
             throw "Unable to create cookie";
           } else {
-            res.cookie("access_token_user", token, {
+            res.cookie("access_token_pharmacist", token, {
               httpOnly: true,
               sameSite: "None",
               secure: true,
@@ -148,5 +148,69 @@ PharRouter.post(
     }
   }
 );
+
+//* Route for updating medical status
+PharRouter.post("/presUpdate", async (req, res) => {
+  //?Authentication for cookie
+  try {
+    //? For Holding id's
+    var Pharmacist_ID;
+
+    //? Retriving cookies -- Error Case - if there are no cookies
+    const PharmacistToken = req.cookies.access_token_pharmacist;
+    if (!PharmacistToken) throw "can't access without authentication";
+
+    //?Block to catch verifying exceptions - error case jwt expire
+    try {
+      const pharmacistData = jwt.verify(
+        PharmacistToken,
+        process.env.REFRESH_TOKEN_PHARMACIST
+      );
+      Pharmacist_ID = pharmacistData.pharmacist;
+    } catch (err) {
+      return res.status(500).json({ status: "JWT Expired" });
+    }
+  } catch (err) {
+    return res.status(500).json({ status: err });
+  }
+
+  //?Checking for permission in permission database
+  try {
+    let permissionCheck = await dboperations.checkPermission(Pharmacist_ID);
+    if (permissionCheck != "edit")
+      throw "Pharmacist is not permitted to edit..";
+  } catch (err) {
+    return res.status(500).json({ status: err });
+  }
+
+  try {
+    //? Retrieve Details
+    const userInfo = await PresModel.findById(req.body.id);
+
+    //? Handling User Exception of document not found
+    if (userInfo.length == 0)
+      throw "unable to find the user with given user_id";
+
+    //?Consolidating information
+    for (let i = 0; i < userInfo.diagnosis[0].medicines.length; i++) {
+      userInfo.diagnosis[0].medicines[i].status = true;
+    }
+    //? Updating the prescription with updated status
+    let newPres = await PresModel.findOneAndUpdate(
+      { _id: req.body.id },
+      { $set: userInfo },
+      { new: true }
+    );
+    //?Execption Handling
+    if (!newPres) throw "Document not updated!!";
+    //?Returning the consolidated information
+    res.json({
+      status: "updated",
+      updateDoc: userInfo,
+    });
+  } catch (msg) {
+    res.status(500).json({ status: msg });
+  }
+});
 
 module.exports = PharRouter;

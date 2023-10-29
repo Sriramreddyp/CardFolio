@@ -188,11 +188,25 @@ DocRouter.post(
 
         let Disease = req.body.diseases;
 
+        //?Creating and formatting date and time for prescription
+        const currentDate = new Date();
+
+        //? Create an instance of the Intl.DateTimeFormat object for the IST time zone.
+        const istDateTime = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Kolkata",
+          dateStyle: "full",
+          timeStyle: "long",
+        });
+
+        //? Format the current date and time in IST.
+        const istDateAndTime = istDateTime.format(currentDate);
+
         //? Forming prescription schema
         const prescription = new PresModel({
           user_id: User_ID,
           doctor_id: Docter_ID,
           diagnosis: [{ Disease, medicines }],
+          timestamp: istDateAndTime,
         });
 
         //? Query Execution Handling
