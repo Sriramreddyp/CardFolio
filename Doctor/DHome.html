@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Main-Docotor-Records</title>
+  <link rel="icon" type="image/png" sizes="128x128" href="../assets/id-card.png">
+ 
+  <link rel="stylesheet" type="text/css" href="DHome.css">
+</head>
+<body>
+
+<div class="navbar">
+  <div class="logo">
+    <img src="../assets/id-card.png" alt="Logo">
+  </div>
+  <div class="logout">
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="username-form">
+    <label for="username">Enter your username:</label>
+    <input type="text" id="username" placeholder="Your username">
+    <button onclick="submitUsername()">Submit</button>
+  </div>
+
+  <div class="user-details">
+    <p id="user-info" class="center">Hello, Name</p>
+    <div class="medical-details center">
+      <p>Medical Details:</p>
+      <ul>
+        <li>Body weight: 0</li>
+        <li>Body height: 0</li>
+        <li>Blood Group: 0</li>
+        <li>Diabetic Status: 0</li>
+        <li>Colestrol Level: 0</li>
+      </ul>
+    </div>
+    
+    <!-- <table id="medical-table" class="center">
+       Data will be dynamically populated here from the backend API 
+    </table> -->
+
+    <table>
+        <tr>
+          <th>Doctor Name</th>
+          <th>Diagnosis</th>
+          <th>Prescription - Medicine Name</th>
+          <th>Status</th>
+        </tr>
+        <!-- These data u need to print from backend-->
+      </table>
+  </div>
+
+  <div class="form center">
+    <form>
+      <label for="diagnosis">Diagnosis:</label>
+      <input type="text" id="diagnosis" placeholder="Enter diagnosis">
+      <br>
+      <label for="medicines">Medicines:</label>
+      <input type="text" id="medicines" placeholder="Enter medicines">
+      <br>
+      <button onclick="updateDetails()">Update</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function submitUsername() {
+    const username = document.getElementById('username').value;
+    const userInfo = document.getElementById('user-info');
+    userInfo.textContent = `Hello, ${username}`;
+    // need to merge with backend
+  }
+
+  function updateDetails() {
+    const diagnosis = document.getElementById('diagnosis').value;
+    const medicines = document.getElementById('medicines').value;
+    // need to merge with backend
+  }
+</script>
+
+</body>
+</html>

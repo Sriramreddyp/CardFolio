@@ -1,0 +1,163 @@
+Student : 
+Inputs : id_card,Password
+
+Login :
+ login operation :
+ -- user schema - retrieve password,id_card
+
+Interface :
+
+Queries : 
+-- retrieve password,save id_card in cookie
+-- Retrieve pres_id array from id_card number
+-- Retrieve id_card status from user schema using id_card number
+-- loop through pres_id array and query each prescription
+-- abstract all the results and validate before visualizing them
+
+consolidated object : 
+{
+  "user_id": null,
+    "docter_id": 0,
+    "dignosis": [
+      {
+        "Disease": "",
+        "medicines": [{ "name": " ", "status": false }]
+      }
+    ],
+    status : "",
+}
+
+fetch Operation :
+ -- User schema : name,pres_id
+ -- prescription : doctor_id -- (sql - doctor name from service provider),prescription,diagnosis
+Update Operation :
+  -- user schema : status
+
+UI elements :
+
+Login :
+one field : id_card Number - text
+another field : password
+forget password
+
+Interface : 
+top left : hello,name
+table : doctor_Name,diagnosis,prescription -- Medicine_name,status
+
+
+card status : 
+activation and deactivation button 
+
+
+
+
+
+
+
+
+
+Doctor :
+Inputs : service_id and pin
+         user's id_number
+
+Login :
+-- service provider - service_id,password
+
+User_id insertion page :
+-- user_schema 
+   "medical": {
+      "Body_weight": 0,
+      "Body_height": 0,
+      "Blood_Group": 0,
+      "Diabetic_Status": 0,
+      "Colestrol_level": 0,
+      },
+      By looping through pres_id array we need to find those prescriptions for the current doctor_id and return those prescription objects.
+          -- diagnosis
+          -- medicine - name,status
+
+Queries :
+-- retrieve userdata using user_id from user schema
+-- retrieve pres objects from user_Id looping through the pres_array in user schema.
+-- updation of newly and renewed prescriptions by consolidating them into a single object and create a new prescription object in prescription schema and eventually update user schema's pres_array with newly formed pres_id
+
+consolidated object : 
+{[
+  "user_id": null,
+    "docter_id": 0,
+    "dignosis": [
+      {
+        "Disease": "",
+        "medicines": [{ "name": " ", "status": false }]
+      }
+    ],
+   "timestamp" : "",
+]
+}
+Interface : 
+Display User data : 
+ "medical": {
+      "Body_weight": 0,
+      "Body_height": 0,
+      "Blood_Group": 0,
+      "Diabetic_Status": 0,
+      "Colestrol_level": 0,
+      },
+Table - timestamp,diagnosis,prescription - medicine,status,renew - checkbox
+form : 
+- diagnosis - text
+- medicines - text (CSV validation)
+Submit - updation of newly and renewed prescriptions by consolidating them into a single object and create a new prescription object in prescription schema and eventually update user schema's pres_array with newly formed pres_id 
+
+
+UI elements :
+Login :
+one field : id_card Number - text
+another field : password
+forget password
+
+User_id Page:
+Enter your user name : - text
+    submit
+
+
+Interface:
+top center  : hello,name
+ "medical": {
+      "Body_weight": 0,
+      "Body_height": 0,
+      "Blood_Group": 0,
+      "Diabetic_Status": 0,
+      "Colestrol_level": 0,
+      },
+table : diagnosis,prescription -- Medicine_name,status,renew
+
+Form :
+Diagnosis - text
+medicines - text
+update button
+
+
+
+
+Medical :
+
+Login - same as doctor
+User_id Enter :  - same as doctor
+
+Third page : 
+
+Table : (Only Pending presciptions to be displayed). 
+Doctor - auth id,service_id,name,disease,medicines, --- 
+Button - generate invoice
+
+Fetch from prescription based on user_id
+Updation - according to the checkboxes based on pres_id update status
+
+
+
+
+
+ 
+
+  
