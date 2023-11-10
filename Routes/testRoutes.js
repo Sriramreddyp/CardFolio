@@ -5,6 +5,7 @@ const TestRouter = express.Router();
 const { body, validationResult } = require("express-validator");
 const validatingOperations = require("../Operations/operations.js");
 const dboperations = require("../Operations/DataBaseOperations.js");
+const bcrypt = require("bcryptjs");
 
 //* Consolidated prescription object - For Test purpose will be removed later
 let prescription = {
@@ -43,6 +44,9 @@ TestRouter.post("/addUser", async (req, res) => {
       console.log("Validation error");
       res.json({ status: "Not Inserted" });
     } else {
+      const salt = await bcrypt.genSalt(10);
+      const hashPass = await bcrypt.hash(User.password, salt);
+      User.password = hashPass;
       //? Creation of schema object
       const user = new UserModel(User);
       //? Query Execution and Handling

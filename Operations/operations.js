@@ -57,20 +57,25 @@ function extractDocterIDs(user) {
 }
 
 //* Function to consolidate information (User-side) for pharmacist
-function consolidationForPharmacist(
-  docterids,
-  docternames,
-  docterauthids,
-  diagnosis
-) {
+function consolidationForPharmacist(docterids, docternames, diagnosis) {
   let consolidatedInfo = [];
   for (let i = 0; i < docterids.length; i++) {
+    let medicines = [];
+    let status = [];
+    let disease = diagnosis[i][0].Disease;
+
+    for (let j = 0; j < diagnosis[i][0].medicines.length; j++) {
+      medicines.push(diagnosis[i][0].medicines[j].name);
+      status.push(diagnosis[i][0].medicines[j].status);
+    }
+
     let obj = {
-      auth_id: docterauthids[i],
-      service_id: docterids[i],
       name: docternames[i],
-      diagnosis: diagnosis[i],
+      disease: disease,
+      medicines: medicines,
+      status: status,
     };
+
     consolidatedInfo.push(obj);
   }
   return consolidatedInfo;

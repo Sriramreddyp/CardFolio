@@ -4,15 +4,26 @@ const jwt = require("jsonwebtoken");
 function authorizationDoctor(req, res, next) {
   const token = req.cookies.access_token_doctor;
   if (!token) {
-    res.json({ status: "Cant access without logging in" });
+    res.redirect("/doctor");
   } else {
     try {
-      const data = jwt(token, process.env.REFRESH_TOKEN_DOCTOR);
+      const data = jwt.verify(token, process.env.REFRESH_TOKEN_DOCTOR);
       req.docter_id = data.doc;
       return next();
     } catch {
-      res.json({ status: "Cant access without logging in" });
+      res.redirect("/doctor");
     }
+  }
+}
+
+//** function for login redirection - doctor */
+function loginRedirectDocter(req, res, next) {
+  const token = req.cookies.access_token_docter;
+  console.log(token);
+  if (token) {
+    res.redirect("/doctor/dash");
+  } else {
+    return next();
   }
 }
 
@@ -20,8 +31,7 @@ function authorizationDoctor(req, res, next) {
 function authorizationDocAndUser(req, res, next) {
   const docterToken = req.cookies.access_token_doctor;
   const docterUser = req.cookies.access_token_user;
-  if (!docterToken || !docterUser)
-    res.status(500).json({ status: "Can't access without cookie data" });
+  if (!docterToken || !docterUser);
   else {
     try {
       const docterData = jwt(docterToken, process.env.REFRESH_TOKEN_DOCTOR);
@@ -51,8 +61,21 @@ function authorizationUser(req, res, next) {
   }
 }
 
-module.export = {
+//* For login Authentication for Pharmacist
+function loginRedirectPharmacist(req, res, next) {
+  const token = req.cookies.access_token_pharmacist;
+  console.log(token);
+  if (token) {
+    res.redirect("/phar/dash");
+  } else {
+    return next();
+  }
+}
+
+module.exports = {
   authorizationDoctor,
   authorizationUser,
   authorizationDocAndUser,
+  loginRedirectPharmacist,
+  loginRedirectDocter,
 };

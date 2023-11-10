@@ -6,10 +6,24 @@ const jwt = require("jsonwebtoken");
 const validatingOperations = require("../Operations/operations.js");
 const PresModel = require("../Models/Prescription");
 const UserModel = require("../Models/User");
+const auth = require("../Utils/middleware.js");
+
+//* Dynamic Variable for error msg's and acknowlegments
+var errormsg;
+var ack;
+
+//* Dynamic Variable for value population
+var Username;
+var height;
+var weight;
+var group;
+var diabetic;
+var colestrol;
+var diagnosisArray = [];
 
 //* Base Route
-DocRouter.get("/", (req, res) => {
-  res.send("Doctor Route is Working Fine!!");
+DocRouter.get("/", auth.loginRedirectDocter, (req, res) => {
+  res.render("Docter/DLogin", { alert: errormsg });
 });
 
 //* Login Route for Doctor Portal
@@ -21,21 +35,22 @@ DocRouter.post(
       .isLength({ min: 12, max: 12 }),
     body("pin", "Plese enter the PIN in required format")
       .exists()
-      .isNumeric()
       .isLength({ min: 6, max: 6 }),
   ],
   async (req, res) => {
     try {
       //? Validation Handling
       let errors = validationResult(req);
-      if (!errors.isEmpty()) throw errors;
+      if (!errors.isEmpty())
+        throw "Plese enter the credentials in requried format!!";
 
       //? Grabbing values from req and database
       let doc_id = req.body.service_id;
       let pass = await dboperations.loginServiceProvider(doc_id);
 
       //? CheckUp for authenticity
-      if (pass == false || pass != req.body.pin) throw "Invalid credentials";
+      if (pass == false || pass != parseInt(req.body.pin))
+        throw "Invalid credentials";
 
       //?Cookie Generation
       jwt.sign(
@@ -44,7 +59,7 @@ DocRouter.post(
         { expiresIn: "10m" },
         (err, token) => {
           if (err) {
-            throw "Unable to create cookie";
+            throw "Internal Server error , Please try again after sometime!!";
           } else {
             res
               .cookie("access_token_doctor", token, {
@@ -53,15 +68,32 @@ DocRouter.post(
                 secure: true,
                 maxAge: 24 * 60 * 60 * 1000,
               })
-              .json({ status: "Login Sucessfull" });
+              .redirect("/doctor/dash");
           }
         }
       );
     } catch (errors) {
-      res.status(500).json({ status: errors });
+      console.log(errors);
+      errormsg = errors;
+      res.status(500).redirect("/doctor");
     }
   }
 );
+
+//** DashBoard display Route */
+DocRouter.get("/dash", auth.authorizationDoctor, (req, res) => {
+  res.render("Docter/DHome", {
+    alert: errormsg,
+    Username: Username,
+    weight: weight,
+    height: height,
+    group: group,
+    diabetic: diabetic,
+    colestrol: colestrol,
+    TableTrans: diagnosisArray,
+    UpdationACK: ack,
+  });
+});
 
 //* UserInfo Retrieval Route
 DocRouter.post(
@@ -75,7 +107,7 @@ DocRouter.post(
     try {
       //? Validation Handling
       let errors = validationResult(req);
-      if (!errors.isEmpty()) throw errors;
+      if (!errors.isEmpty()) throw "Enter user id in correct format!!";
 
       // //?Cookies Generation and parsing
       jwt.sign(
@@ -84,7 +116,7 @@ DocRouter.post(
         { expiresIn: "10m" },
         (err, token) => {
           if (err) {
-            throw "Unable to create cookie";
+            throw "Internal Server Error!! Please try again after sometime";
           } else {
             res.cookie("access_token_user", token, {
               httpOnly: true,
@@ -105,23 +137,70 @@ DocRouter.post(
 
       //?Consolidating information
       //! PROBLEM WITH PRESCRIPTION CONSOLIDATION
-      const medicalInfo = userInfo[0].medical;
-      const prescriptionInfo = medicalInfo.prescription;
-      const prescriptions = [];
+      Username = userInfo[0].name;
+      weight = userInfo[0].medical.Body_weight;
+      height = userInfo[0].medical.Body_height;
+      group = userInfo[0].medical.Blood_Group;
+      diabetic = userInfo[0].medical.Diabetic_Status;
+      colestrol = userInfo[0].medical.Colestrol_level;
 
-      for (let i = 0; i < prescriptionInfo.length; i++) {
-        prescriptions.push(await UserModel.findById(prescriptionInfo[i].id));
+      // const prescriptionInfo = medicalInfo.prescription;
+      // const prescriptions = [];
+
+      // for (let i = 0; i < prescriptionInfo.length; i++) {
+      //   prescriptions.push(await UserModel.findById(prescriptionInfo[i].id));
+      // }
+
+      //  //? Retrieve Details
+      const userPresInfo = await PresModel.find({ user_id: req.body.id });
+
+      // //? Handling User Exception of document not found
+      if (userPresInfo.length == 0)
+        throw "unable to find the user with given user_id";
+
+      //?Getting docter_id's
+      const docterIds = validatingOperations.extractDocterIDs(userPresInfo);
+
+      const docterNames = [];
+      const docterAuthIds = [];
+      //?Grabbing name and auth_id for each docter
+      try {
+        for (let i = 0; i < docterIds.length; i++) {
+          let conObj = await dboperations.grabNameAndAuthID(docterIds[i]);
+
+          if (conObj != false) {
+            docterNames.push(conObj.name);
+            docterAuthIds.push(conObj.auth_id);
+          } else {
+            throw "Invalid Details for provided docter_id";
+          }
+        }
+      } catch (err) {
+        errormsg = err;
+        res.redirect("/doctor/dash");
       }
 
+      //?Retriving all the diagnosis details
+      const diagnosis = [];
+      for (let i = 0; i < userPresInfo.length; i++) {
+        diagnosis.push(userPresInfo[i].diagnosis);
+      }
+
+      //?Consolidating information
+      const ConsolidatedInfo = validatingOperations.consolidationForPharmacist(
+        docterIds,
+        docterNames,
+        diagnosis
+      );
+
+      diagnosisArray = ConsolidatedInfo;
+
       //?Returning the consolidated information
-      res.json({
-        medical: medicalInfo,
-        prescription_Info: prescriptionInfo,
-        prescriptions: prescriptions,
-      });
+      res.status(200).redirect("/doctor/dash");
     } catch (msg) {
-      res.clearcookie("access_token_user");
-      res.status(500).json({ status: msg });
+      // res.clearcookie("access_token_user");
+      errormsg = msg;
+      res.status(200).redirect("/doctor/dash");
     }
   }
 );
@@ -146,6 +225,8 @@ DocRouter.post(
       if (!docterToken || !userToken)
         throw "can't access without authentication";
 
+      console.log(userToken);
+      console.log(docterToken);
       //?Block to catch verifying exceptions - error case jwt expire
       try {
         const docterData = jwt.verify(
@@ -158,7 +239,10 @@ DocRouter.post(
         User_ID = userData.user;
         Docter_ID = docterData.doc;
       } catch (err) {
-        return res.status(500).json({ status: "JWT Expired" });
+        errormsg = "Please login again (Session expired)!!";
+        res.clearCookie("access_token_user");
+        res.clearCookie("access_token_doctor");
+        res.redirect("/doctor");
       }
 
       //?Checking for permission in permission database
@@ -168,7 +252,10 @@ DocRouter.post(
         if (permissionCheck != "edit")
           throw "Doctor is not permitted to edit..";
       } catch (err) {
-        return res.status(500).json({ status: err });
+        if (!err)
+          err = "Internal Server Error, Please try again after sometime";
+        else ack = err;
+        return res.redirect("/doctor/dash");
       }
 
       try {
@@ -224,18 +311,25 @@ DocRouter.post(
           { new: true }
         );
 
-        res.status(200).json({ newUser });
+        ack = "Prescription Updated!!";
+        res.redirect("/doctor/dash");
       } catch (err) {
-        res
-          .status(500)
-          .json({ status: "unable to store prescription", error: err });
+        if (!err)
+          err = "Internal Server Error, Please try again after sometime";
+        else ack = err;
+        return res.redirect("/doctor/dash");
       }
     } catch (err) {
-      res
-        .status(500)
-        .json({ msg: "Unable to store prescription", status: err });
+      if (!err) err = "Internal Server Error, Please try again after sometime";
+      else ack = err;
+      return res.redirect("/doctor/dash");
     }
   }
 );
 
-module.exports = DocRouter;
+DocRouter.get("/logout", auth.authorizationDoctor, (req, res) => {
+  if (req.cookies.access_token_user) res.clearCookie("access_token_user");
+  res.clearCookie("access_token_doctor").redirect("/doctor");
+});
+
+module.exports = { DocRouter };

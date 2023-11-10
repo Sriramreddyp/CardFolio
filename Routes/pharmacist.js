@@ -5,11 +5,15 @@ const dboperations = require("../Operations/DataBaseOperations.js");
 const jwt = require("jsonwebtoken");
 const validatingOperations = require("../Operations/operations.js");
 const PresModel = require("../Models/Prescription");
-const UserModel = require("../Models/User");
+
+const auth = require("../Utils/middleware.js");
+
+//** Dynamic Variable to render errors */
+var errormsg;
 
 //* Base Route
-PharRouter.get("/", (req, res) => {
-  res.send("Pharmacist Route is Working Fine!!");
+PharRouter.get("/", auth.loginRedirectPharmacist, (req, res) => {
+  res.render("Pharmacist/MLogin", { alert: errormsg });
 });
 
 //* Login Route for Doctor Portal
@@ -21,30 +25,30 @@ PharRouter.post(
       .isLength({ min: 12, max: 12 }),
     body("pin", "Plese enter the PIN in required format")
       .exists()
-      .isNumeric()
       .isLength({ min: 6, max: 6 }),
   ],
   async (req, res) => {
     try {
       //? Validation Handling
       let errors = validationResult(req);
-      if (!errors.isEmpty()) throw errors;
+      if (!errors.isEmpty()) throw "Enter the credentials in correct Format!!";
 
       //? Grabbing values from req and database
-      let doc_id = req.body.service_id;
-      let pass = await dboperations.loginServiceProvider(doc_id);
+      let phar_id = req.body.service_id;
+      let pass = await dboperations.loginServiceProvider(phar_id);
 
       //? CheckUp for authenticity
-      if (pass == false || pass != req.body.pin) throw "Invalid credentials";
+      if (pass == false || pass != parseInt(req.body.pin))
+        throw "Invalid credentials";
 
       //?Cookie Generation
       jwt.sign(
-        { pharmacist: doc_id },
+        { phar: phar_id },
         process.env.REFRESH_TOKEN_PHARMACIST,
         { expiresIn: "10m" },
         (err, token) => {
           if (err) {
-            throw "Unable to create cookie";
+            throw "Internal Server Error, Please try again after sometime!";
           } else {
             res
               .cookie("access_token_pharmacist", token, {
@@ -58,7 +62,8 @@ PharRouter.post(
         }
       );
     } catch (errors) {
-      res.status(500).json({ status: errors });
+      errormsg = errors;
+      res.status(500).redirect("/phar");
     }
   }
 );
@@ -135,7 +140,6 @@ PharRouter.post(
       const ConsolidatedInfo = validatingOperations.consolidationForPharmacist(
         docterIds,
         docterNames,
-        docterAuthIds,
         diagnosis
       );
 
