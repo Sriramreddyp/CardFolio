@@ -83,7 +83,6 @@ DocRouter.post(
 //** DashBoard display Route */
 DocRouter.get("/dash", auth.authorizationDoctor, (req, res) => {
   res.render("Docter/DHome", {
-    alert: errormsg,
     Username: Username,
     weight: weight,
     height: height,
@@ -130,7 +129,7 @@ DocRouter.post(
 
       //? Retrieve Details
       const userInfo = await UserModel.find({ id_card: req.body.id });
-
+      console.log(userInfo);
       // //? Handling User Exception of document not found
       if (userInfo.length == 0)
         throw "unable to find the user with given user_id";
@@ -155,8 +154,7 @@ DocRouter.post(
       const userPresInfo = await PresModel.find({ user_id: req.body.id });
 
       // //? Handling User Exception of document not found
-      if (userPresInfo.length == 0)
-        throw "unable to find the user with given user_id";
+      if (userPresInfo.length == 0) throw "No prescriptions Found!!";
 
       //?Getting docter_id's
       const docterIds = validatingOperations.extractDocterIDs(userPresInfo);
@@ -194,7 +192,7 @@ DocRouter.post(
       );
 
       diagnosisArray = ConsolidatedInfo;
-
+      errormsg = "";
       //?Returning the consolidated information
       res.status(200).redirect("/doctor/dash");
     } catch (msg) {
@@ -310,7 +308,7 @@ DocRouter.post(
           { $set: user[0] },
           { new: true }
         );
-
+        errormsg = "";
         ack = "Prescription Updated!!";
         res.redirect("/doctor/dash");
       } catch (err) {

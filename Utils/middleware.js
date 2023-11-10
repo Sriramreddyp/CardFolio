@@ -27,6 +27,32 @@ function loginRedirectDocter(req, res, next) {
   }
 }
 
+//* For authorizing docter cookie
+function authorizationUser(req, res, next) {
+  const token = req.cookies.access_token_user;
+  if (!token) res.redirect("/user");
+  else {
+    try {
+      const data = jwt.verify(token, process.env.REFRESH_TOKEN_USER);
+      req.user_id = data.user;
+      return next();
+    } catch {
+      res.redirect("/user");
+    }
+  }
+}
+
+//** function for login redirection - user */
+function loginRedirectUser(req, res, next) {
+  const token = req.cookies.access_token_user;
+  console.log(token);
+  if (token) {
+    res.redirect("/user/userInfo");
+  } else {
+    return next();
+  }
+}
+
 //*For authorizing both docter and user cookie
 function authorizationDocAndUser(req, res, next) {
   const docterToken = req.cookies.access_token_doctor;
@@ -41,22 +67,6 @@ function authorizationDocAndUser(req, res, next) {
       return next();
     } catch {
       res.status(500).json({ status: "Can't access without cookie data" });
-    }
-  }
-}
-
-//* For authorizing user cookie
-function authorizationUser(req, res, next) {
-  const token = req.cookies.access_token_user;
-  if (!token) {
-    res.json({ status: "Cant access the cookie" });
-  } else {
-    try {
-      const data = jwt(token, process.env.REFRESH_TOKEN_USER);
-      req.user_id = data.user;
-      return next();
-    } catch {
-      res.json({ status: "Cant access the token" });
     }
   }
 }
@@ -78,4 +88,6 @@ module.exports = {
   authorizationDocAndUser,
   loginRedirectPharmacist,
   loginRedirectDocter,
+  authorizationUser,
+  loginRedirectUser,
 };

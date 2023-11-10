@@ -4,6 +4,7 @@ const BodyParser = require("body-parser");
 const DocRouter = require("./Routes/doctor.js");
 const test = require("./Routes/testRoutes.js");
 const pharmac = require("./Routes/pharmacist.js");
+const user = require("./Routes/user.js");
 const cookieParser = require("cookie-parser");
 const app = express();
 const ej = require("ejs");
@@ -27,13 +28,7 @@ app.get("/", (req, res) => {
 app.use("/doctor", DocRouter.DocRouter);
 app.use("/test", test);
 app.use("/phar", pharmac);
-
-// app.get("/docter", (req, res) => {
-//   res.render("Docter/DLogin");
-// });
-app.get("/phar", (req, res) => {
-  res.render("Pharmacist/MLogin");
-});
+app.use("/user", user);
 
 app.listen(process.env.PORT, () => {
   console.log(`API Listening on Port : ${process.env.PORT}`);
