@@ -6,6 +6,10 @@ html {
   font-family: Arial, sans-serif;
 }
 
+.UserTable {
+  list-style-type: none;
+}
+
 /* Navbar styles */
 .navbar {
   background-color: #000;

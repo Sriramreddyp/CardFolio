@@ -56,8 +56,22 @@ function extractDocterIDs(user) {
   return docterIds;
 }
 
+//* Function to seggregate prescriptionID's
+function extractPrescriptionIDs(user) {
+  let prescriptionIds = [];
+  for (let i = 0; i < user.length; i++) {
+    prescriptionIds.push(user[i]._id);
+  }
+  return prescriptionIds;
+}
+
 //* Function to consolidate information (User-side) for pharmacist
-function consolidationForPharmacist(docterids, docternames, diagnosis) {
+function consolidationForPharmacist(
+  prescriptionIds,
+  docterids,
+  docternames,
+  diagnosis
+) {
   let consolidatedInfo = [];
   for (let i = 0; i < docterids.length; i++) {
     let medicines = [];
@@ -70,6 +84,7 @@ function consolidationForPharmacist(docterids, docternames, diagnosis) {
     }
 
     let obj = {
+      id: prescriptionIds[i],
       name: docternames[i],
       disease: disease,
       medicines: medicines,
@@ -87,4 +102,5 @@ module.exports = {
   extractMedicines,
   extractDocterIDs,
   consolidationForPharmacist,
+  extractPrescriptionIDs,
 };

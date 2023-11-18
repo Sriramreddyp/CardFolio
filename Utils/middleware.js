@@ -82,6 +82,22 @@ function loginRedirectPharmacist(req, res, next) {
   }
 }
 
+//* For authorizing pharmacist cookie
+function authorizationPhar(req, res, next) {
+  const token = req.cookies.access_token_pharmacist;
+  if (!token) {
+    res.redirect("/phar");
+  } else {
+    try {
+      const data = jwt.verify(token, process.env.REFRESH_TOKEN_PHARMACIST);
+      req.pharmacist_id = data.pharmacist;
+      return next();
+    } catch {
+      res.redirect("/phar");
+    }
+  }
+}
+
 module.exports = {
   authorizationDoctor,
   authorizationUser,
@@ -90,4 +106,5 @@ module.exports = {
   loginRedirectDocter,
   authorizationUser,
   loginRedirectUser,
+  authorizationPhar,
 };

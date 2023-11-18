@@ -5,7 +5,7 @@ const dboperations = require("../Operations/DataBaseOperations.js");
 const jwt = require("jsonwebtoken");
 const validatingOperations = require("../Operations/operations.js");
 const PresModel = require("../Models/Prescription");
-
+const UserModel = require("../Models/User.js");
 const auth = require("../Utils/middleware.js");
 
 //** Dynamic Variable to render errors */
@@ -14,6 +14,11 @@ var errormsg;
 //* Base Route
 PharRouter.get("/", auth.loginRedirectPharmacist, (req, res) => {
   res.render("Pharmacist/MLogin", { alert: errormsg });
+});
+
+//**DashBoard Route */
+PharRouter.get("/dash", (req, res) => {
+  res.render("Pharmacist/MHome");
 });
 
 //* Login Route for Doctor Portal
@@ -57,7 +62,7 @@ PharRouter.post(
                 secure: true,
                 maxAge: 24 * 60 * 60 * 1000,
               })
-              .json({ status: "Login Sucessfull" });
+              .redirect("/phar/dash");
           }
         }
       );
@@ -103,15 +108,27 @@ PharRouter.post(
       );
 
       //? Retrieve Details
+      const userInfo = await UserModel.find({ id_card: req.body.id });
+
+      // //? Handling User Exception of document not found
+      if (userInfo.length == 0)
+        throw "unable to find the user with given user_id";
+
+      // console.log(userInfo);
+
+      //? Retrieve Details
       const userPresInfo = await PresModel.find({ user_id: req.body.id });
 
       // //? Handling User Exception of document not found
       if (userPresInfo.length == 0)
         throw "unable to find the user with given user_id";
 
+      // console.log(userPresInfo);
+
       //?Getting docter_id's
       const docterIds = validatingOperations.extractDocterIDs(userPresInfo);
-
+      const prescriptionIds =
+        validatingOperations.extractPrescriptionIDs(userPresInfo);
       const docterNames = [];
       const docterAuthIds = [];
       //?Grabbing name and auth_id for each docter
@@ -138,13 +155,15 @@ PharRouter.post(
 
       //?Consolidating information
       const ConsolidatedInfo = validatingOperations.consolidationForPharmacist(
+        prescriptionIds,
         docterIds,
         docterNames,
         diagnosis
       );
-
+      console.log(ConsolidatedInfo);
       //?Returning the consolidated information
       res.json({
+        name: userInfo[0].name,
         Information: ConsolidatedInfo,
       });
     } catch (msg) {
@@ -175,17 +194,18 @@ PharRouter.post("/presUpdate", async (req, res) => {
       return res.status(500).json({ status: "JWT Expired" });
     }
   } catch (err) {
-    return res.status(500).json({ status: err });
+    return res.status(500).json({ status: false });
   }
 
-  //?Checking for permission in permission database
-  try {
-    let permissionCheck = await dboperations.checkPermission(Pharmacist_ID);
-    if (permissionCheck != "edit")
-      throw "Pharmacist is not permitted to edit..";
-  } catch (err) {
-    return res.status(500).json({ status: err });
-  }
+  // //?Checking for permission in permission database
+  // // try {
+  // let permissionCheck = await dboperations.checkPermission(Pharmacist_ID);
+  // console.log(permissionCheck);
+  // // if (permissionCheck != "edit")
+  // //   throw "Pharmacist is not permitted to edit..";
+  // // } catch (err) {
+  // //   return res.status(500).json({ status: err });
+  // // }
 
   try {
     //? Retrieve Details
@@ -209,12 +229,15 @@ PharRouter.post("/presUpdate", async (req, res) => {
     if (!newPres) throw "Document not updated!!";
     //?Returning the consolidated information
     res.json({
-      status: "updated",
-      updateDoc: userInfo,
+      status: true,
     });
   } catch (msg) {
-    res.status(500).json({ status: msg });
+    res.status(500).json({ status: false });
   }
+});
+
+PharRouter.get("/logout", auth.authorizationPhar, (req, res) => {
+  res.clearCookie("access_token_pharmacist").redirect("/phar");
 });
 
 module.exports = PharRouter;

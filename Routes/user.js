@@ -197,6 +197,7 @@ user.get("/userInfo", auth.authorizationUser, async (req, res) => {
 
     //?Getting docter_id's
     const docterIds = validators.extractDocterIDs(userPresInfo);
+    const prescriptionIds = validators.extractPrescriptionIDs(userPresInfo);
     const docterNames = [];
     const docterAuthIds = [];
     //?Grabbing name and auth_id for each docter
@@ -221,9 +222,11 @@ user.get("/userInfo", auth.authorizationUser, async (req, res) => {
     for (let i = 0; i < userPresInfo.length; i++) {
       diagnosis.push(userPresInfo[i].diagnosis);
     }
+    console.log(diagnosis);
 
     //?Consolidating information
     const ConsolidatedInfo = validators.consolidationForPharmacist(
+      prescriptionIds,
       docterIds,
       docterNames,
       diagnosis

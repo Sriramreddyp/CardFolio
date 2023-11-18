@@ -1,24 +1,19 @@
-.imgcontainer
-{
-    width: 100%;
-    text-align: center; 
+.imgcontainer {
+  width: 100%;
+  text-align: center;
 }
 
-.moved-image 
-{
-    margin-left: 1%;
+.moved-image {
+  margin-left: 1%;
 }
-.container 
-{
-    align-items: center;
-    
+.container {
+  align-items: center;
 }
-body 
-{
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }

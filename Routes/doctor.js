@@ -9,7 +9,7 @@ const UserModel = require("../Models/User");
 const auth = require("../Utils/middleware.js");
 
 //* Dynamic Variable for error msg's and acknowlegments
-var errormsg;
+var errormsg = "";
 var ack;
 
 //* Dynamic Variable for value population
@@ -83,6 +83,7 @@ DocRouter.post(
 //** DashBoard display Route */
 DocRouter.get("/dash", auth.authorizationDoctor, (req, res) => {
   res.render("Docter/DHome", {
+    alert: errormsg,
     Username: Username,
     weight: weight,
     height: height,
@@ -158,7 +159,8 @@ DocRouter.post(
 
       //?Getting docter_id's
       const docterIds = validatingOperations.extractDocterIDs(userPresInfo);
-
+      const prescriptionIDs =
+        validatingOperations.extractPrescriptionIDs(userPresInfo);
       const docterNames = [];
       const docterAuthIds = [];
       //?Grabbing name and auth_id for each docter
@@ -186,6 +188,7 @@ DocRouter.post(
 
       //?Consolidating information
       const ConsolidatedInfo = validatingOperations.consolidationForPharmacist(
+        prescriptionIDs,
         docterIds,
         docterNames,
         diagnosis
@@ -196,7 +199,7 @@ DocRouter.post(
       //?Returning the consolidated information
       res.status(200).redirect("/doctor/dash");
     } catch (msg) {
-      // res.clearcookie("access_token_user");
+      res.clearCookie("access_token_user");
       errormsg = msg;
       res.status(200).redirect("/doctor/dash");
     }

@@ -17,7 +17,7 @@
         <img src="../images/id-card.png" alt="Logo" />
       </div>
       <div class="logout">
-        <button onclick="logout()">Logout</button>
+        <button><a href="/phar/logout"> logout </a></button>
       </div>
     </div>
 
@@ -25,21 +25,22 @@
       <div class="username-form">
         <label for="username">Enter your username:</label>
         <input type="text" id="username" placeholder="Your username" />
-        <button onclick="submitUsername()">Submit</button>
+        <button onclick="renderTable()">Submit</button>
       </div>
 
+      <!-- 1 -- > UserName -->
       <div class="user-details">
         <p id="user-info" class="center">Hello, Name</p>
       </div>
+
+      <table id="User-Info"></table>
+      <p id="Err-Msg"></p>
+      <br />
+      <button id="updation" onclick="retrieveStatus()">
+        Update The Status of the Prescription
+      </button>
     </div>
 
-    <script>
-      function submitUsername() {
-        const username = document.getElementById("username").value;
-        const userInfo = document.getElementById("user-info");
-        userInfo.textContent = `Hello, ${username}`;
-        // need to merge with backend
-      }
-    </script>
+    <script src="../Scripts/render.js"></script>
   </body>
 </html>
