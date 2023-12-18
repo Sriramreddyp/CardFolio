@@ -18,9 +18,10 @@ const PresSchema = new Schema({
   user_id: { type: String, required: true },
   doctor_id: { type: String, required: true },
   diagnosis: [diagnosisSchema], // Embed the Diagnosis schema as an array
+  timestamp: { type: String, required: true },
+  status: { type: Boolean, default: false },
 });
 
 //** Create a User model using the User schema
 const PresModel = mongoose.model("PresModel", PresSchema);
-
 module.exports = PresModel;

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <title>
+        Student Login
+    </title>
+    <link rel="icon" type="image/png" sizes="128x128" href="../images/id-card.png">
+ 
+    <link rel="stylesheet" href="../User/Login.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="imgcontainer">
+        <img src="../images/id-card-1.png" class="moved-image">
+    </div>
+    <h1>Login with your details</h1> 
+
+        <div class="center1">
+           
+    <form action="/user/login" method="post">
+        <label for="id_card">ID Card Number:</label>
+        <input type="text" id="id_card" name="id_no" placeholder="Enter ID Card Number" required>
+        <br><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter Password" required>
+        <br>
+        <p><%=alert%></p>
+        <br>
+        <h5>Forget Password</h5>
+        <input type="submit" value="Login">
+    </form> 
+        </div>
+    </div>
+</body>
+</html>

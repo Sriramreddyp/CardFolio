@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Main-Pharmacist-Records</title>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="128x128"
+      href="../images/id-card.png"
+    />
+
+    <link rel="stylesheet" type="text/css" href="../Pharmacist/MHome.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="logo">
+        <img src="../images/id-card.png" alt="Logo" />
+      </div>
+      <div class="logout">
+        <button><a href="/phar/logout"> logout </a></button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="username-form">
+        <label for="username">Enter your username:</label>
+        <input type="text" id="username" placeholder="Your username" />
+        <button onclick="renderTable()">Submit</button>
+      </div>
+
+      <!-- 1 -- > UserName -->
+      <div class="user-details">
+        <p id="user-info" class="center">Hello, Name</p>
+      </div>
+
+      <table id="User-Info"></table>
+      <p id="Err-Msg"></p>
+      <br />
+      <button id="updation" onclick="retrieveStatus()">
+        Update The Status of the Prescription
+      </button>
+    </div>
+
+    <script src="../Scripts/render.js"></script>
+  </body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Main-Docotor-Records</title>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="128x128"
+      href="../images/id-card.png"
+    />
+
+    <link rel="stylesheet" type="text/css" href="../Docter/DHome.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="logo">
+        <img src="../images/id-card.png" alt="Logo" />
+      </div>
+      <div class="logout">
+        <button><a href="/doctor/logout">Logout</a></button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="username-form">
+        <form action="/doctor/userInfo" method="post">
+          <label for="username">Enter your username:</label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Your username"
+            name="id"
+          />
+          <input type="submit" value="submit" />
+        </form>
+        <p><%=alert%></p>
+      </div>
+
+      <div class="user-details">
+        <p id="user-info" class="center">Hello, <span><%=Username %></span></p>
+        <div class="medical-details center">
+          <p>Medical Details:</p>
+          <ul class="UserTable">
+            <li>Body weight: <span><%=weight %></span></li>
+            <li>Body height: <span><%=height %></span></li>
+            <li>Blood Group: <span><%=group %></span></li>
+            <li>Diabetic Status: <span><%=diabetic %></span></li>
+            <li>Colestrol Level: <span><%=colestrol %></span></li>
+          </ul>
+        </div>
+
+        <!-- <table id="medical-table" class="center">
+       Data will be dynamically populated here from the backend API 
+    </table> -->
+
+        <table>
+          <tr>
+            <th>Doctor Name</th>
+            <th>Diagnosis</th>
+            <th>Prescription - Medicine Name</th>
+            <th>Status</th>
+          </tr>
+          <!-- These data u need to print from backend-->
+          <tr>
+            <% TableTrans.forEach(entry => { %>
+            <td><%= entry.name %></td>
+            <td><%= entry.disease %></td>
+            <td><%= entry.medicines %></td>
+            <td><%= entry.status %></td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
+
+      <div class="form center">
+        <form action="/doctor/presAdd" method="post">
+          <label for="diagnosis">Disease:</label>
+          <input
+            type="text"
+            id="diagnosis"
+            placeholder="Enter diagnosis"
+            name="diseases"
+          />
+          <br />
+          <label for="medicines">Medicines:</label>
+          <input
+            type="text"
+            id="medicines"
+            name="medicines"
+            placeholder="Enter medicines - Comma Seperated Values"
+          />
+          <br />
+          <input type="submit" name="submit" id="" />
+        </form>
+        <p><%=UpdationACK%></p>
+      </div>
+    </div>
+
+    <script>
+      function submitUsername() {
+        const username = document.getElementById("username").value;
+        const userInfo = document.getElementById("user-info");
+        userInfo.textContent = `Hello, ${username}`;
+        // need to merge with backend
+      }
+
+      function updateDetails() {
+        const diagnosis = document.getElementById("diagnosis").value;
+        const medicines = document.getElementById("medicines").value;
+        // need to merge with backend
+      }
+    </script>
+  </body>
+</html>
