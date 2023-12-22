@@ -23,7 +23,7 @@ var diagnosisArray = [];
 
 //* Base Route
 DocRouter.get("/", auth.loginRedirectDocter, (req, res) => {
-  res.render("Docter/DLogin", { alert: errormsg });
+  res.render("/app/views/Docter/DLogin", { alert: errormsg });
 });
 
 //* Login Route for Doctor Portal
@@ -82,7 +82,7 @@ DocRouter.post(
 
 //** DashBoard display Route */
 DocRouter.get("/dash", auth.authorizationDoctor, (req, res) => {
-  res.render("Docter/DHome", {
+  res.render("/app/views/Docter/DHome", {
     alert: errormsg,
     Username: Username,
     weight: weight,

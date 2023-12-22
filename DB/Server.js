@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 //** Establishing Connection with Local MongoDB */
-mongoose.connect("mongodb://localhost:27017/Estonian_DB", {
+mongoose.connect("mongodb://0.0.0.0:27017/Estonian_DB", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

@@ -99,12 +99,12 @@ user.post(
 
 //**User mail route */
 user.get("/", auth.loginRedirectUser, (req, res) => {
-  res.render("User/Login", { alert: errormsg });
+  res.render("/app/views/User/Login", { alert: errormsg });
 });
 
 //**User DashBoard Rendering Route */
 user.get("/dash", auth.authorizationUser, (req, res) => {
-  res.render("User/Home", {
+  res.render("/app/views/User/Home", {
     alert: errormsg,
     Username: Username,
     weight: weight,

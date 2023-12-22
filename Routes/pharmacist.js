@@ -13,12 +13,12 @@ var errormsg;
 
 //* Base Route
 PharRouter.get("/", auth.loginRedirectPharmacist, (req, res) => {
-  res.render("Pharmacist/MLogin", { alert: errormsg });
+  res.render("/app/views/Pharmacist/MLogin", { alert: errormsg });
 });
 
 //**DashBoard Route */
 PharRouter.get("/dash", (req, res) => {
-  res.render("Pharmacist/MHome");
+  res.render("/app/views/Pharmacist/MHome");
 });
 
 //* Login Route for Doctor Portal

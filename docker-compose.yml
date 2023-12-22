@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  database-sql:
+    image: mysql:8.0
+    cap_add:
+      - SYS_NICE
+    restart: always
+    environment:
+      - MYSQL_DATABASE=estonian_card
+      - MYSQL_ROOT_PASSWORD=mauFJcuf5dhRMQrjj
+    ports:
+      - "3306:3306"
+    networks:
+      - node-network
+
+    database-mongoDB:
+      image: mongo:6-jammy
+      ports: "27017:27017"
+      networks:
+        - node-network
+
+  application:
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+    depends_on:
+      - database-sql
+      - database-mongoDB
+
+networks:
+  node-network:
+    driver: bridge
