@@ -2,7 +2,7 @@
 
 ## Analogy :
 
-A Universal Unique Indetified Id card for a user, which can be used as identity provider and various other uses like retailing,data saving,transactions,data exchange etc
+A Universal Unique Identified Id card for a user, which can be used as identity provider and various other uses like retailing,data saving,transactions,data exchange etc
 
 ## Stack Used :
 
