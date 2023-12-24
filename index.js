@@ -8,7 +8,7 @@ const user = require("./Routes/user.js");
 const cookieParser = require("cookie-parser");
 const app = express();
 const ej = require("ejs");
-const PORT = 80;
+const PORT = 3000;
 require("./DB/Server.js");
 require("./DB/SQL.js");
 

@@ -1,15 +1,13 @@
 const SQL = require("mysql2");
 
 const con = SQL.createConnection({
-  host: "localhost",
+  host: "sql_container",
   user: "root",
   password: "mauFJcuf5dhRMQrjj",
   database: "estonian_card",
+  waitForConnection: true,
 });
 
-con.connect((err) => {
-  if (err == null) console.log("SQL DataBase Connected!!");
-  else console.log("SQL DataBase Not Connected!!");
-});
+con.connect();
 
 module.exports = con;

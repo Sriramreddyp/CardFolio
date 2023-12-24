@@ -11,12 +11,14 @@ services:
       - MYSQL_ROOT_PASSWORD=mauFJcuf5dhRMQrjj
     ports:
       - "3306:3306"
+    container_name: sql_container
     # networks:
     #   - node-network
 
     database-mongoDB:
       image: mongo:6-jammy
       ports: "27017:27017"
+      container_name: mongo_container
       # networks:
       #   - node-network
 
