@@ -5,6 +5,10 @@ USER app
 
 WORKDIR /app
 
+USER root
+RUN chmod 777 /app
+USER app
+
 COPY package*.json .
 RUN npm install
 COPY . .
