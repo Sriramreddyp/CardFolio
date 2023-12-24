@@ -15,12 +15,12 @@ services:
     # networks:
     #   - node-network
 
-    database-mongoDB:
-      image: mongo:6-jammy
-      ports: "27017:27017"
-      container_name: mongo_container
-      # networks:
-      #   - node-network
+  database-mongoDB:
+    image: mongo:6-jammy
+    ports: [27017:27017]
+    container_name: mongo_container
+    # networks:
+    #   - node-network
 
   application:
     build: .
