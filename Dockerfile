@@ -9,9 +9,9 @@ USER root
 RUN chmod 777 /app
 USER app
 
-COPY package*.json .
+COPY package*.json ./
 RUN npm install
-COPY . .
+COPY . ./
 
 EXPOSE 3000
 
