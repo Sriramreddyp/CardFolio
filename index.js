@@ -30,6 +30,6 @@ app.use("/test", test);
 app.use("/phar", pharmac);
 app.use("/user", user);
 
-app.listen(process.env.PORT, () => {
+app.listen(PORT, () => {
   console.log(`API Listening on Port : ${PORT}`);
 });

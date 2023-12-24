@@ -11,26 +11,29 @@ services:
       - MYSQL_ROOT_PASSWORD=mauFJcuf5dhRMQrjj
     ports:
       - "3306:3306"
+    volumes:
+      - db:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     container_name: sql_container
-    # networks:
-    #   - node-network
 
   database-mongoDB:
     image: mongo:6-jammy
     ports: [27017:27017]
     container_name: mongo_container
-    # networks:
-    #   - node-network
+    volumes:
+      - dbdata6:/data/db
 
   application:
     build: .
     ports:
       - 3000:3000
-    # volumes:
-    #   - .:/app
+    volumes:
+      - .:/app
     depends_on:
       - database-sql
       - database-mongoDB
-# networks:
-#   node-network:
-#     driver: bridge
+
+volumes:
+  dbdata6:
+  db:
+    driver: local
