@@ -1,5 +1,6 @@
 version: "3.8"
 
+#Credentials should not be provided in plaintext - should update as env variable
 services:
   database-sql:
     image: mysql:8.0
